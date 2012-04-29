@@ -1,0 +1,10 @@
+('/Users/samuel/anacronos/build/pyi.darwin/anachro/anachro',
+ True,
+ False,
+ None,
+ None,
+ [],
+ False,
+ True,
+ 0,
+ 1335712888)
