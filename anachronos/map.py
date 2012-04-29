@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import fabulous.color
 import random
 import sys
@@ -5,14 +7,28 @@ import sys
 sys.setrecursionlimit(10000)
 
 terrain_types = {
-	"tree":[(0,75,0), (0,255,0), '^^', True],
-	"hill":[(75,75,75),(0,0,0), '@@', False],
-	"water":[(0,0,65), (0,0,255), '  ', False],
-	"dirt":[(155,125,99), (200,200,200), '  ', True],
-	"grass":[(10,100,0), (0,200,0), '..', True],
-	"wall":[(20,20,20), (200,200,200), "##", False],
-	"road":[(30,30,30), (255,255,0), "| ", True],
-	"marker":[(0,0,0), (200,0,0), "..", True]
+
+	"default":{
+		"tree":[(0,75,0), (0,255,0), '^^', True],
+		"hill":[(75,75,75),(0,0,0), '@@', False],
+		"water":[(0,0,65), (0,0,255), '  ', False],
+		"dirt":[(155,125,99), (200,200,200), '  ', True],
+		"grass":[(10,100,0), (0,200,0), '..', True],
+		"wall":[(20,20,20), (200,200,200), "##", False],
+		"road":[(30,30,30), (255,255,0), "| ", True],
+		"marker":[(0,0,0), (200,0,0), "..", True]
+	},
+
+	"moon":{
+		"tree":[(75,75,75), (255,255,255), '^^', True],
+		"hill":[(150,75,75),(50,0,0), '))', False],
+		"water":[(100,20,20), (200,0,0), '  ', False],
+		"dirt":[(155,100,100), (200,200,200), '  ', True],
+		"grass":[(100,100,100), (20,20,20), '..', True],
+		"wall":[(20,20,20), (200,200,200), "##", False],
+		"road":[(30,30,30), (255,255,0), "| ", True],
+		"marker":[(0,0,0), (200,0,0), "..", True]
+	}
 }
 
 passable_types = {
@@ -49,18 +65,18 @@ def weighted_choice(lst):
 		n = n - weight
 	return item
 
-def paint(map, terrain, x, y):
+def paint(map, terrain, x, y, tileset="default"):
 	tile = map.tile(x,y)
-	tile.bg_color = terrain_types[terrain][0]
-	tile.fg_color = terrain_types[terrain][1]
-	tile.fg_symbol = terrain_types[terrain][2]
+	tile.bg_color = terrain_types[tileset][terrain][0]
+	tile.fg_color = terrain_types[tileset][terrain][1]
+	tile.fg_symbol = terrain_types[tileset][terrain][2]
 
 class MapGenerator(object):
 
 
-	def create_map(self, starting_terrain, size):
+	def create_map(self, starting_terrain, size, tileset="default"):
 		"""
-		Holy shit this sucks.
+		Holy shit this sucks less now.
 
 		"""
 		
@@ -98,10 +114,10 @@ class MapGenerator(object):
 		new_map = Map(size)
 		for x in range(0, size):
 			for y in range(0, size):
-				new_map.zones[x].tiles[y].bg_color = terrain_types[rows[x][y]][0]
-				new_map.zones[x].tiles[y].fg_color = terrain_types[rows[x][y]][1]
-				new_map.zones[x].tiles[y].fg_symbol = terrain_types[rows[x][y]][2]
-				new_map.zones[x].tiles[y].passable = terrain_types[rows[x][y]][3]
+				new_map.zones[x].tiles[y].bg_color = terrain_types[tileset][rows[x][y]][0]
+				new_map.zones[x].tiles[y].fg_color = terrain_types[tileset][rows[x][y]][1]
+				new_map.zones[x].tiles[y].fg_symbol = terrain_types[tileset][rows[x][y]][2]
+				new_map.zones[x].tiles[y].passable = terrain_types[tileset][rows[x][y]][3]
 		return new_map
 
 
@@ -120,7 +136,7 @@ class Map(object):
 		for x in range(0, size):
 			tiles = []
 			for y in range(0, size):
-				tiles.append(Tile(x, y, self, terrain_types['dirt']))
+				tiles.append(Tile(x, y, self, terrain_types['default']['dirt']))
 			self.zones.append(Zone(tiles))
 		self.p1_deployment = ((0,0), (0, size/2), (size/2, 0), (size/2, size/2))
 		self.p2_deployment = ((size/2,size/2), (size/2, size), (size, size/2), (size, size))
@@ -155,6 +171,7 @@ class Tile(object):
 		self.x = x
 		self.y = y
 		self.map = map
+		self.type = None
 		self.bg_color = terrain_type[0]
 		self.fg_color = terrain_type[1]
 		self.fg_symbol = terrain_type[2]
@@ -174,9 +191,11 @@ class Tile(object):
 		if self.occupant and self.occupant.life > 0:
 			symbol = self.occupant.symbol
 			fg_color = self.occupant.player.color
-			bg_color = (75,75,75)
+			bg_color = []
+			for elem in self.bg_color:
+				bg_color.append(int(elem*.5))
 		elif self.temp_fg_symbol:
-			symbol = self.temp_fg_symbol
+			symbol = fabulous.color.blink(self.temp_fg_symbol)
 			fg_color = self.temp_fg_color
 			bg_color = self.bg_color
 		else:
@@ -186,7 +205,7 @@ class Tile(object):
 		if self.temp_bg_color:
 			bg_color = self.temp_bg_color
 
-		sys.stdout.write(str(fabulous.color.bg256(bg_color, fabulous.color.fg(fg_color, symbol))))
+		sys.stdout.write(str(fabulous.color.bg256(bg_color, fabulous.color.fg256(fg_color, symbol))))
 		self.temp_fg_symbol = None
 		self.temp_fg_color = None
 		self.temp_bg_color = None

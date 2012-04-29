@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from logic import calculate_distance, get_adjacent_tiles, load_config
 import fabulous.color
 import logic

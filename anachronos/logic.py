@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 def calculate_distance(tilea, tileb):
 	"""
 	Calculate the ceiling of the distance between two
@@ -68,7 +70,7 @@ def load_config(config_file_name):
 	import os
 	import sys
 	config_dict = {}
-	config_file = open(os.path.join(os.path.dirname(sys.executable), config_file_name)).readlines()
+	config_file = open(config_file_name).readlines()
 	for config_entry in config_file:
 		config = config_entry[:-1].split(" ")
 		config_dict[config[0]] = config[1:]
