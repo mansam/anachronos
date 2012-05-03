@@ -2,6 +2,8 @@ class Player(object):
 
 	def __init__(self, name, color):
 		self.units = []
+		self.deployed_units = {}
+		self.undeployed_units = {}
 		self.color = color
 		self.name = name
 		self.actions = []
@@ -21,7 +23,7 @@ class Player(object):
 
 	def is_alive(self):
 		alive = False
-		for unit in self.units:
+		for unit in self.deployed_units:
 			if unit.life > 0:
 				return True
 		return alive

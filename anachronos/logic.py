@@ -39,7 +39,7 @@ def get_adjacent_tiles(tile, radius):
 				adjacent_tiles.append(tile.map.tile(new_x, new_y))
 	return adjacent_tiles
 
-def get_neighbor_tiles(tile):
+def get_neighbor_tiles(tile, ignore_impassable=False):
 	"""
 
 	"""
@@ -53,7 +53,7 @@ def get_neighbor_tiles(tile):
 			if (new_x >= 0 and new_x < tile.map.size 
 				and new_y >= 0 and new_y < tile.map.size 
 				and (new_x, new_y) != (tile.x, tile.y) 
-				and tile.map.tile(new_x, new_y).passable):
+				and (tile.map.tile(new_x, new_y).passable or ignore_impassable)):
 					adjacent_tiles.append(tile.map.tile(new_x, new_y))
 	return adjacent_tiles
 
@@ -67,8 +67,6 @@ def chunks(l, n):
 		yield l[i:i + n]
 
 def load_config(config_file_name):
-	import os
-	import sys
 	config_dict = {}
 	config_file = open(config_file_name).readlines()
 	for config_entry in config_file:
@@ -76,7 +74,7 @@ def load_config(config_file_name):
 		config_dict[config[0]] = config[1:]
 	return config_dict
 
-def a_star(start, goal):
+def a_star(start, goal, ignore_impassable=False):
     import operator
 
     closedset = set()    # The set of nodes already evaluated.
@@ -100,7 +98,7 @@ def a_star(start, goal):
         openset.remove(current)
         del f_score[current]
         closedset.add(current)
-        for neighbor in get_neighbor_tiles(current):
+        for neighbor in get_neighbor_tiles(current, ignore_impassable):
             if neighbor in closedset:
                 continue
             tentative_g_score = g_score[current] + calculate_distance_noceil(current,neighbor)

@@ -25,7 +25,9 @@ class GameState(object):
 		for player in self.players:
 			player.state = self
 			for key in DEFAULTS:
-				player.units += [self.unit_factory.create_unit(key, player) for i in range(0, int(DEFAULTS[key][0]))]
+				player.undeployed_units[key] = []
+				for i in range(0, int(DEFAULTS[key[0]])):
+					player.undeployed_units[key] += self.unit_factory.create_unit(key, player)
 		
 		self.turn_number = 1
 		self.copied_map = None
@@ -43,7 +45,7 @@ class GameState(object):
 			for move in player.moves:
 				if move.path and move.active:
 					for tile in move.path:
-						tile.mark('**', (255,0,0))
+						tile.mark('✦ ', (255,0,0))
 
 	def paint_map(self):
 		import os
@@ -79,7 +81,7 @@ class GameState(object):
 			for result in attack_results:
 				print result
 		self.turn_number += 1
-		raw_input("Press any key to continue.")
+		input("Press any key to continue.")
 
 	def undo_move(self, turn_number, move_number):
 		move = [move for move in self.move_stack[turn_number] if move.id == move_number][0]
@@ -110,7 +112,7 @@ class GameState(object):
 				for result in attack_results:
 					print result
 		print fabulous.color.blue("Temporal reflow complete!")
-		raw_input("Press any key to continue.")
+		input("Press any key to continue.")
 
 
 class Action(object):
