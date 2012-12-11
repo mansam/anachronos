@@ -11,11 +11,11 @@ def load_tile_table(filename, width, height):
 	image_width, image_height = image.get_size()
 	tile_table = []
 	for tile_x in range(0, image_width/width):
-		line = []
-		tile_table.append(line)
+		#line = []
+		#tile_table.append(line)
 		for tile_y in range(0, image_height/height):
 			rect = (tile_x*width, tile_y*height, width, height)
-			line.append(image.subsurface(rect))
+			tile_table.append(image.subsurface(rect))
 	return tile_table
 
 regional_probabilities = {
@@ -68,7 +68,10 @@ def create_map(starting_terrain, size, tileset="default"):
 	def paint(tile, terrain, prob, mod, iteration=0, queue=[], visited=[]):
 		if random.random() <= prob:
 			rows[tile[0]][tile[1]] = 1
-			screen.blit(terrain_types['default'][terrain][0][0], (tile[0]*16, tile[1]*16))
+			terrain_to_paint = terrain_types['default'][terrain][0]
+			if isinstance(terrain_to_paint, list):
+				terrain_to_paint = random.choice(terrain_to_paint)
+			screen.blit(terrain_to_paint, (tile[0]*16, tile[1]*16))
 			prob -= mod
 			mod += .01
 			if mod < 0:
@@ -76,16 +79,12 @@ def create_map(starting_terrain, size, tileset="default"):
 		else:
 			terrain = weighted_choice(regional_probabilities[terrain])
 			rows[tile[0]][tile[1]] = 1
-			screen.blit(terrain_types['default'][terrain][0][0], (tile[0]*16, tile[1]*16))
+			terrain_to_paint = terrain_types['default'][terrain][0]
+			if isinstance(terrain_to_paint, list):
+				terrain_to_paint = random.choice(terrain_to_paint)
+			screen.blit(terrain_to_paint, (tile[0]*16, tile[1]*16))
 			prob = 4
 			mod = .01
-		if iteration % 75 == 0:
-			import os
-			import time
-			os.system("clear")
-			print "Generating Map"
-			pygame.display.flip()
-			time.sleep(0.1)
 		tiles = get_adjacent(tile[0], tile[1], size)
 		random.shuffle(tiles)
 		iteration += 1
@@ -104,20 +103,23 @@ if __name__=='__main__':
 	bottom.fill((0,0,255))
 	screen.fill((255, 255, 255))
 	tile_table = load_tile_table("tiles.png", 16, 16)
+	grass_table = load_tile_table("grass.bmp", 16, 16)
+	mountain_table = load_tile_table("mountain.png", 16, 16)
 	terrain_types = {
 
 	"default":{
 		"tree":[tile_table[3], True],
-		"hill":[tile_table[2], False],
+		"hill":[mountain_table, False],
 		"water":[tile_table[4], False],
 		"dirt":[tile_table[0], True],
-		"grass":[tile_table[1], True],
+		"grass":[grass_table, True],
 	}
 }
 	create_map('dirt', 50)
 	screen.blit(menu, (800, 0))
 	screen.blit(bottom, (0, 800))
 	pygame.display.flip()
+	print terrain_types
 	while pygame.event.wait().type != pygame.locals.QUIT:
 		pass
 
