@@ -14,7 +14,7 @@ def calculate_distance(tilea, tileb, ceiling=True):
 	else:
 		return distance
 
-def get_neighbor_tiles(tile, radius=1, check_passible=True):
+def get_neighbor_tiles(tile, radius=1, check_passable=True):
 	"""
 	Return the neighbor tiles within a radius surrounding a center tile.
 	Optionally considers whether a tile is passable when considering
@@ -32,10 +32,10 @@ def get_neighbor_tiles(tile, radius=1, check_passible=True):
 		for j in vals:
 			new_x = tile.x+i
 			new_y = tile.y+j
-			if new_x >= 0 and new_x < tile.map.size 
+			if (new_x >= 0 and new_x < tile.map.size 
 				and new_y >= 0 and new_y < tile.map.size 
 				and (new_x, new_y) != (tile.x, tile.y)
-				and (tile.map.tile(new_x, new_y).passable):
+				and (tile.map.tile(new_x, new_y).passable)):
 					adjacent_tiles.append(tile.map.tile(new_x, new_y))
 	return adjacent_tiles
 
@@ -85,7 +85,7 @@ def a_star(start, goal, check_passable=True):
 		openset.remove(current)
 		del f_score[current]
 		closedset.add(current)
-		for neighbor in get_neighbor_tiles(current, check_passable=True):
+		for neighbor in get_neighbor_tiles(current, check_passable=check_passable):
 			if neighbor in closedset:
 				continue
 			tentative_g_score = g_score[current] + calculate_distance(current, neighbor, ceiling=False)

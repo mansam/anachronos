@@ -1,4 +1,4 @@
-from logic import a_star, calculate_distance, get_adjacent_tiles, load_config
+from logic import a_star, calculate_distance, get_neighbor_tiles, load_config
 import fabulous.color
 
 class Unit(object):
@@ -86,7 +86,7 @@ class Attack(object):
 		roll = random.randint(1, 20) + self.modifier
 
 		if self.radius > 0:
-			affected_tiles = get_adjacent_tiles(tile, self.radius) + [tile]
+			affected_tiles = get_neighbor_tiles(tile, self.radius) + [tile]
 		else:
 			affected_tiles = [tile]
 
@@ -101,16 +101,16 @@ class Attack(object):
 class UnitFactory(object):
 
 	def __init__(self):
-		self.attack_config = load_config("attacks.data")
-		self.unit_config = load_config("units.data")
+		self.attack_config = load_config("data/attacks.data")
+		self.unit_config = load_config("data/units.data")
 		self.units = {}
 		self.attacks = {}
-			for entry in self.attack_config:
+		for entry in self.attack_config:
 			self.attacks[entry] = Attack(entry,
-									int(self.attack_config[entry][0]),
-									int(self.attack_config[entry][1]),
-									int(self.attack_config[entry][2]),
-									int(self.attack_config[entry][3]))
+				int(self.attack_config[entry][0]),
+				int(self.attack_config[entry][1]),
+				int(self.attack_config[entry][2]),
+				int(self.attack_config[entry][3]))
 
 	def create_unit(self, unit_name, player):
 		if unit_name in self.unit_config:

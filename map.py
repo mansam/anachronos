@@ -84,7 +84,7 @@ class MapGenerator(object):
 
 	def create_map(self, starting_terrain, size, tileset="default"):
 		"""
-		Holy shit this sucks less now.
+		Procedurally generate a map consisting of different biomes.
 
 		"""
 		
@@ -134,10 +134,10 @@ class MapGenerator(object):
 
 		paint(new_map, curr_tile, starting_terrain, draw_prob, modifier)
 	
-		path = logic.a_star(new_map.zones[len(new_map.zones)/2].tiles[0], new_map.zones[len(new_map.zones)/2].tiles[-1], ignore_impassable=True)
+		path = logic.a_star(new_map.zones[len(new_map.zones)/2].tiles[0], new_map.zones[len(new_map.zones)/2].tiles[-1], check_passable=False)
 		for tile in path:
 			tile.temp_bg_color = (255,0,0)
-		path = logic.a_star(new_map.zones[0].tiles[len(new_map.zones)/2], new_map.zones[-1].tiles[len(new_map.zones)/2], ignore_impassable=True)
+		path = logic.a_star(new_map.zones[0].tiles[len(new_map.zones)/2], new_map.zones[-1].tiles[len(new_map.zones)/2], check_passable=False)
 		for tile in path:
 			tile.temp_bg_color = (255,0,0)
 		return new_map

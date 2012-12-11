@@ -7,8 +7,8 @@ import fabulous
 from copy import deepcopy
 from collections import deque
 
-COLORS = logic.load_config("colors.data")
-DEFAULTS = logic.load_config("defaults.data")
+COLORS = logic.load_config("data/colors.data")
+DEFAULTS = logic.load_config("data/defaults.data")
 
 class GameState(object):
 
