@@ -124,7 +124,7 @@ def previous_moves(state, player):
 	raw_input()
 
 def previous_attacks(state, player):
-	print "\nSee attackss from which turn? (Current turn is %d) (0 to cancel)" % state.turn_number
+	print "\nSee attacks from which turn? (Current turn is %d) (0 to cancel)" % state.turn_number
 	turn = -1
 	while turn < 1 or turn > state.turn_number - 1:
 		try:
